@@ -14,16 +14,11 @@ function getServersList(ns: NS, currentServer = "home", set = new Set<string>() 
   return Array.from(set.keys()).map((s) => new Server(ns, s))
 }
 
-function getThreadCount(ns: NS, hostname: string, scriptRamUsage: number): number {
-  const usableRam = ns.getServerMaxRam(hostname) - ns.getServerUsedRam(hostname)
-  return Math.floor(usableRam / scriptRamUsage)
-}
-
 export async function main(ns : NS) : Promise<void> {
   const servers = getServersList(ns)
 
   for (const server of servers) {
-    server.copyScripts()
+    await server.copyScripts()
   }
 
   while (true) {
@@ -39,8 +34,6 @@ export async function main(ns : NS) : Promise<void> {
           server.grow()
         } else if (server.canHack()) {
           server.hack()
-        } else {
-            ns.tprint("Can do nothing on this server (deploy)")
         }
       } else {
         server.openPorts()

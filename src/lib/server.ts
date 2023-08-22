@@ -10,46 +10,51 @@ export class Server {
         return this.ns.getServer(this.host)
     }
 
-    hasAdminRight(): bool {
+    hasAdminRight(): boolean {
         return this.info().hasAdminRights
     }
 
-    needWeaken(): bool {
+    needWeaken(): boolean {
         const securityThresh = this.ns.getServerMinSecurityLevel(this.host) + 5
         return this.ns.getServerSecurityLevel(this.host) > securityThresh
     }
 
-    needGrow(): bool {
-        const moneyThresh = this.ns.getServerMaxMoney(this.hosts) * 0.75
+    needGrow(): boolean {
+        const moneyThresh = this.ns.getServerMaxMoney(this.host) * 0.75
         return this.ns.getServerMoneyAvailable(this.host) < moneyThresh
     }
 
-    canHack(): bool {
-        this.ns.getHackingLevel() >= this.ns.getServerRequiredHackingLevel(this.host)
+    canHack(): boolean {
+        return this.ns.getHackingLevel() >= this.ns.getServerRequiredHackingLevel(this.host)
+    }
+
+    getThreadCount(scriptRamUsage: number): number {
+        const usableRam = this.ns.getServerMaxRam(this.host) - this.ns.getServerUsedRam(this.host)
+        return Math.floor(usableRam / scriptRamUsage)
     }
 
     weaken(): void {
-        const availaibleThreads = getThreadCount(this.ns, this.host, 1.75)
+        const availaibleThreads = this.getThreadCount(1.75)
         if (availaibleThreads > 0) {
             this.ns.exec("bin/weaken.js", this.host, availaibleThreads, this.host)
         }
     }
 
     grow(): void {
-        const availaibleThreads = getThreadCount(this.ns, this.host, 1.75)
+        const availaibleThreads = this.getThreadCount(1.75)
         if (availaibleThreads > 0) {
             this.ns.exec("bin/grow.js", this.host, availaibleThreads, this.host)
         }
     }
 
     hack(): void {
-        const availaibleThreads = getThreadCount(this.ns, this.host, 1.70)
+        const availaibleThreads = this.getThreadCount(1.70)
         if (availaibleThreads > 0) {
             this.ns.exec("bin/hack.js", this.host, availaibleThreads, this.host)
         }
     }
 
-    openSsh() {
+    openSsh(): void {
         if (this.info().sshPortOpen) {
             return
         }
@@ -61,7 +66,7 @@ export class Server {
         }
     }
     
-    openFtp() {
+    openFtp(): void {
         if (this.info().ftpPortOpen) {
             return
         }
@@ -73,8 +78,12 @@ export class Server {
         }
     }
 
-    nuke() {
-        if (this.info().openPortCount < this.info().numOpenPortsRequired) {
+    nuke(): void {
+        const { openPortCount, numOpenPortsRequired } = this.info()
+        if (openPortCount === undefined || numOpenPortsRequired === undefined) {
+            return
+        }
+        if (openPortCount < numOpenPortsRequired) {
             return
         }
 
@@ -90,14 +99,14 @@ export class Server {
         this.openFtp()
     }
 
-    async copyScripts(): void {
-        await ns.scp(
+    async copyScripts(): Promise<void> {
+        await this.ns.scp(
             [
               "bin/grow.js",
               "bin/weaken.js",
               "bin/hack.js",
             ],
-            server,
+            this.host,
             "home"
           )
     }
