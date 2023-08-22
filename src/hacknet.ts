@@ -19,6 +19,11 @@ function calculateHnetMoneyGainRate(level: number, ram: number, cores: number, m
 }
 
 function calculateMedianNodeRate(ns: NS, nodes: number[]): number {
+
+  if (nodes.length === 0) {
+    return 0
+  }
+
   const totalLevel: number[] = []
   const totalRam: number[] = []
   const totalCore: number[] = []
