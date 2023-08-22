@@ -1,5 +1,5 @@
 import { NS } from '@ns'
-import { Server } from './lib/server'
+import { Server } from 'lib/server'
 
 function getServersList(ns: NS, currentServer = "home", set = new Set<string>() ): Server[] {
   let serverConnections: string[] = ns.scan(currentServer)
