@@ -25,6 +25,19 @@ export class Hacknet {
     upgrade(mult: number, minMoney: number): void {
         const nodeStats: NodeStats[] = []
 
+        const newNodeStats = this._getNewNodeStats(mult)
+
+        if (this.nodes.length === 0) {
+            if (minMoney < newNodeStats.cost) {
+                this.ns.print("Not enought money for the purchase node (hacknet)")
+                return
+            }
+
+            this.ns.hacknet.purchaseNode()
+            this.nodes = this.retriveNodes()
+            return
+        }
+
         for (const node of this.nodes) {
             const stats = node.getUpgradeRates(mult)
             nodeStats.push(...stats)
@@ -33,8 +46,6 @@ export class Hacknet {
         nodeStats.sort((a, b) => b.ratio - a.ratio)
 
         const upgrade = nodeStats[0]
-
-        const newNodeStats = this._getNewNodeStats(mult)
 
         if (newNodeStats.ratio < upgrade.ratio) {
             if (minMoney < newNodeStats.cost) {

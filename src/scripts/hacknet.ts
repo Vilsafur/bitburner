@@ -6,11 +6,13 @@ export async function main(ns : NS) : Promise<void> {
 
   const hacknet = new Hacknet(ns)
 
-  while (true) {
+  while (ns.hacknet.numNodes() < 25) {
     const playerMult = ns.getPlayer().mults.hacknet_node_money
     const playerMoney = ns.getPlayer().money
 
     hacknet.upgrade(playerMult, playerMoney)
     await ns.sleep(100)
   }
+
+  ns.tprint("# HACKNET # All nodes purchased")
 }
