@@ -6,45 +6,45 @@ export class Server {
         this.host = host
     }
 
-    info(): NSServer {
+    get info(): NSServer {
         return this.ns.getServer(this.host)
     }
 
+    get hasAdminRight(): boolean {
+        return this.info.hasAdminRights
+    }
+
+    get isPurchase(): boolean {
+        return this.info.purchasedByPlayer
+    }
+
+    get needWeaken(): boolean {
+        const securityThresh = this.ns.getServerMinSecurityLevel(this.host) + 5
+        return this.ns.getServerSecurityLevel(this.host) > securityThresh
+    }
+
+    get needGrow(): boolean {
+        const moneyThresh = this.ns.getServerMaxMoney(this.host) * 0.75
+        return this.ns.getServerMoneyAvailable(this.host) < moneyThresh
+    }
+
+    get canHack(): boolean {
+        return this.ns.getHackingLevel() >= this.ns.getServerRequiredHackingLevel(this.host)
+    }
+
     basicHack(): void {
-        if (this.hasAdminRight()) {
-            if (this.needWeaken()) {
+        if (this.hasAdminRight) {
+            if (this.needWeaken) {
                 this.weaken()
-            } else if (this.needGrow()) {
+            } else if (this.needGrow) {
                 this.grow()
-            } else if (this.canHack()) {
+            } else if (this.canHack) {
                 this.hack()
             }
         } else {
             this.openPorts()
             this.nuke()
         }
-    }
-
-    hasAdminRight(): boolean {
-        return this.info().hasAdminRights
-    }
-
-    isPurchase(): boolean {
-        return this.info().purchasedByPlayer
-    }
-
-    needWeaken(): boolean {
-        const securityThresh = this.ns.getServerMinSecurityLevel(this.host) + 5
-        return this.ns.getServerSecurityLevel(this.host) > securityThresh
-    }
-
-    needGrow(): boolean {
-        const moneyThresh = this.ns.getServerMaxMoney(this.host) * 0.75
-        return this.ns.getServerMoneyAvailable(this.host) < moneyThresh
-    }
-
-    canHack(): boolean {
-        return this.ns.getHackingLevel() >= this.ns.getServerRequiredHackingLevel(this.host)
     }
 
     getThreadCount(scriptRamUsage: number): number {
@@ -74,7 +74,7 @@ export class Server {
     }
 
     openSsh(): void {
-        if (this.info().sshPortOpen) {
+        if (this.info.sshPortOpen) {
             return
         }
 
@@ -86,7 +86,7 @@ export class Server {
     }
     
     openFtp(): void {
-        if (this.info().ftpPortOpen) {
+        if (this.info.ftpPortOpen) {
             return
         }
 
@@ -98,7 +98,7 @@ export class Server {
     }
 
     nuke(): void {
-        const { openPortCount, numOpenPortsRequired } = this.info()
+        const { openPortCount, numOpenPortsRequired } = this.info
         if (openPortCount === undefined || numOpenPortsRequired === undefined) {
             return
         }

@@ -17,11 +17,11 @@ export class Farm
   }
 
   getPurchaseServers(): Server[] {
-    return this.servers.filter((s) => s.isPurchase())
+    return this.servers.filter((s) => s.isPurchase)
   }
 
   getOtherServers(): Server[] {
-    return this.servers.filter((s) => !s.isPurchase())
+    return this.servers.filter((s) => !s.isPurchase)
   }
 
   async enablebasicHack(): Promise<void> {
