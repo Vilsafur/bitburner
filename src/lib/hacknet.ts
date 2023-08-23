@@ -21,7 +21,7 @@ export class Hacknet {
         return arr
     }
 
-    upgrade(mult: number, minMoney): void {
+    upgrade(mult: number, minMoney: number): void {
         const nodeStats: NodeStats[] = []
 
         for (const node of this.nodes) {
@@ -48,7 +48,7 @@ export class Hacknet {
                 this.ns.print(`Not enought money for the upgrade ${upgrade.name} for node ${upgrade.node.nodeNum} (hacknet)`)
                 return
             }
-            
+
             switch (upgrade.name) {
                 case "level":
                   upgrade.node.upgradeLevel()
@@ -68,7 +68,7 @@ export class Hacknet {
 
     }
 
-    _calculateMedianNodeRate(): number {
+    _calculateMedianNodeRate(mult: number): number {
         if (this.nodes.length === 0) {
             return 0
           }
@@ -87,14 +87,14 @@ export class Hacknet {
           const medianRam = totalRam.reduce((a, b) => a + b) / this.nodes.length
           const medianCore = totalCore.reduce((a, b) => a + b) / this.nodes.length
         
-          const nodeMedianRate = calculateHnetMoneyGainRate(medianLevel, medianRam, medianCore, ns.getPlayer().mults.hacknet_node_money)
+          const nodeMedianRate = calculateHnetMoneyGainRate(medianLevel, medianRam, medianCore, mult)
         
           return nodeMedianRate
     }
 
-    _getNewNodeStats(mult: number) {
+    _getNewNodeStats(mult: number): { name: string, cost: number, ratio: number } {
         const nodePurshaseCost = this.ns.hacknet.getPurchaseNodeCost()
-        const nodePurshaseRate = this._calculateMedianNodeRate()
+        const nodePurshaseRate = this._calculateMedianNodeRate(mult)
 
         return {
             name: "node",
