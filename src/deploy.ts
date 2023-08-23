@@ -15,6 +15,7 @@ function getServersList(ns: NS, currentServer = "home", set = new Set<string>() 
 }
 
 export async function main(ns : NS) : Promise<void> {
+  ns.disableLog("sleep")
   const servers = getServersList(ns)
 
   for (const server of servers) {
