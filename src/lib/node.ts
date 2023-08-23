@@ -98,7 +98,3 @@ export class Node {
         this.production = production
     }
 }
-
-export async function main(ns : NS) : Promise<void> {
-    ns.tprint("Ce n'est pas un script")
-}

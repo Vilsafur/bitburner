@@ -104,7 +104,3 @@ export class Hacknet {
         }
     }
 }
-
-export async function main(ns : NS) : Promise<void> {
-    ns.tprint("Ce n'est pas un script")
-}
