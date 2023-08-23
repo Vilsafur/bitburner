@@ -29,6 +29,10 @@ export class Server {
         return this.info().hasAdminRights
     }
 
+    isPurchase(): boolean {
+        return this.info().purchasedByPlayer
+    }
+
     needWeaken(): boolean {
         const securityThresh = this.ns.getServerMinSecurityLevel(this.host) + 5
         return this.ns.getServerSecurityLevel(this.host) > securityThresh

@@ -8,10 +8,20 @@ export class Farm
   constructor (public ns: NS) {
     this.ns = ns
     this.servers = this.retriveServers()
+
+    this.servers.forEach(s => s.copyScripts())
   }
 
   getServersWithoutHome(): Server[] {
     return this.servers.filter((s) => s.host !== 'home')
+  }
+
+  getPurchaseServers(): Server[] {
+    return this.servers.filter((s) => s.isPurchase())
+  }
+
+  getOtherServers(): Server[] {
+    return this.servers.filter((s) => !s.isPurchase())
   }
 
   async enablebasicHack(): Promise<void> {
