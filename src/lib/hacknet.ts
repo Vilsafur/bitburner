@@ -1,6 +1,7 @@
 import { NS } from '@ns'
 import { Node } from '/lib/node';
 import { NodeStats } from 'interfaces/Hacknet'
+import { calculateMoneyGainRate } from '/utils/hacknet';
 
 export class Hacknet {
     nodes: Node[]
@@ -12,7 +13,7 @@ export class Hacknet {
 
     retriveNodes(): Node[] {
         const arr = [];
-        const nbNodes = this.ns.hacknet.numNodes(), 
+        const nbNodes = this.ns.hacknet.numNodes()
 
         for (let i = 0; i < nbNodes; i++) {
             arr.push(new Node(this.ns, i))
@@ -87,7 +88,7 @@ export class Hacknet {
           const medianRam = totalRam.reduce((a, b) => a + b) / this.nodes.length
           const medianCore = totalCore.reduce((a, b) => a + b) / this.nodes.length
         
-          const nodeMedianRate = calculateHnetMoneyGainRate(medianLevel, medianRam, medianCore, mult)
+          const nodeMedianRate = calculateMoneyGainRate(medianLevel, medianRam, medianCore, mult)
         
           return nodeMedianRate
     }

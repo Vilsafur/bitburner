@@ -1,5 +1,5 @@
 import { NS } from '@ns'
-import { Hacknet } from '/lib/hacknet';
+import { Hacknet } from '/lib/hacknet'
 
 export async function main(ns : NS) : Promise<void> {
   ns.disableLog("sleep")

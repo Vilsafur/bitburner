@@ -3,10 +3,10 @@ import { calculateMoneyGainRate } from 'utils/hacknet'
 import { NodeStats } from '/interfaces/Hacknet'
 
 export class Node {
-    level: number
-    ram: number
-    cores: number
-    production: number
+    level = 0
+    ram = 0
+    cores = 0
+    production = 0
 
     constructor (public ns: NS, public nodeNum: number) {
         this.ns = ns
@@ -53,21 +53,21 @@ export class Node {
         return [
             {
                 name: "level",
-                core: this.nodeNum,
+                node: this,
                 cost: levelUpgradeCost,
                 rate: levelUpgradeRate,
                 ratio: levelUpgradeRate / levelUpgradeCost,
             },
             {
                 name: "ram",
-                core: this.nodeNum,
+                node: this,
                 cost: ramUpgradeCost,
                 rate: ramUpgradeRate,
                 ratio: ramUpgradeRate / ramUpgradeCost,
             },
             {
                 name: "core",
-                core: this.nodeNum,
+                node: this,
                 cost: coreUpgradeCost,
                 rate: coreUpgradeRate,
                 ratio: coreUpgradeRate / coreUpgradeCost,
@@ -91,7 +91,7 @@ export class Node {
     }
 
     _retriveStats(): void {
-        const {level, ram, cores, production } = ns.hacknet.getNodeStats(nodeNum)
+        const {level, ram, cores, production } = this.ns.hacknet.getNodeStats(this.nodeNum)
         this.level = level
         this.ram = ram
         this.cores = cores
