@@ -6,8 +6,23 @@ export class Server {
         this.host = host
     }
 
-    info (): NSServer {
+    info(): NSServer {
         return this.ns.getServer(this.host)
+    }
+
+    basicHack(): void {
+        if (this.hasAdminRight()) {
+            if (this.needWeaken()) {
+                this.weaken()
+            } else if (this.needGrow()) {
+                this.grow()
+            } else if (this.canHack()) {
+                this.hack()
+            }
+        } else {
+            this.openPorts()
+            this.nuke()
+        }
     }
 
     hasAdminRight(): boolean {
