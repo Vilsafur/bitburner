@@ -1,12 +1,12 @@
 import { NS } from '@ns'
 import { Hacknet } from '/lib/hacknet'
-import { Player } from '/lib/player'
+import { getPlayer } from '/lib/player'
 
 export async function main(ns : NS) : Promise<void> {
   ns.disableLog("sleep")
 
   const hacknet = new Hacknet(ns)
-  const player = new Player(ns)
+  const player = getPlayer(ns)
 
   while (ns.hacknet.numNodes() < 25) {
 

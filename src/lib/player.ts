@@ -43,3 +43,13 @@ export class Player {
     return this.ns.fileExists('sqlinject.exe')
   }
 }
+
+let player: Player
+
+export function getPlayer(ns: NS): Player {
+  if (!player) {
+    player = new Player(ns)
+  }
+
+  return player
+}

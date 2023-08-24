@@ -1,9 +1,13 @@
 import { NS, Server as NSServer } from '@ns'
+import { Player, getPlayer } from '/lib/player'
 
 export class Server {
+    player: Player
+
     constructor(public ns: NS, public host: string) {
         this.ns = ns
         this.host = host
+        this.player = getPlayer(ns)
     }
 
     get info(): NSServer {
@@ -78,6 +82,10 @@ export class Server {
             return
         }
 
+        if (!this.player.haveBruteSSH) {
+            return
+        }
+
         try {
             this.ns.brutessh(this.host)
         } catch (e) {
@@ -90,8 +98,60 @@ export class Server {
             return
         }
 
+        if (!this.player.haveFTPCrack) {
+            return
+        }
+
         try {
             this.ns.ftpcrack(this.host)
+        } catch (e) {
+            e
+        }
+    }
+    
+    openHttp(): void {
+        if (this.info.httpPortOpen) {
+            return
+        }
+
+        if (!this.player.haveHTTPWorm) {
+            return
+        }
+
+        try {
+            this.ns.httpworm(this.host)
+        } catch (e) {
+            e
+        }
+    }
+    
+    openSmtp(): void {
+        if (this.info.smtpPortOpen) {
+            return
+        }
+
+        if (!this.player.haveRelaySMTP) {
+            return
+        }
+
+        try {
+            this.ns.relaysmtp(this.host)
+        } catch (e) {
+            e
+        }
+    }
+    
+    openSql(): void {
+        if (this.info.sqlPortOpen) {
+            return
+        }
+
+        if (!this.player.haveSQLInject) {
+            return
+        }
+
+        try {
+            this.ns.sqlinject(this.host)
         } catch (e) {
             e
         }
@@ -99,6 +159,7 @@ export class Server {
 
     nuke(): void {
         const { openPortCount, numOpenPortsRequired } = this.info
+
         if (openPortCount === undefined || numOpenPortsRequired === undefined) {
             return
         }
@@ -108,6 +169,7 @@ export class Server {
 
         try {
             this.ns.nuke(this.host)
+            this.ns.tprint(`[+] Admin right access on server ${this.host}`)
         } catch (e) {
             e
         }
@@ -116,6 +178,9 @@ export class Server {
     openPorts(): void {
         this.openSsh()
         this.openFtp()
+        this.openHttp()
+        this.openSmtp()
+        this.openSql()
     }
 
     async copyScripts(): Promise<void> {
