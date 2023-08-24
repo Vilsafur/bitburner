@@ -25,11 +25,11 @@ export class Hacknet {
     upgrade(mult: number, minMoney: number): void {
         const nodeStats: NodeStats[] = []
 
-        const newNodeStats = this._getNewNodeStats(mult)
+        const newNodeStats = this.getNewNodeStats(mult)
 
         if (this.nodes.length === 0) {
             if (minMoney < newNodeStats.cost) {
-                this.ns.print("Not enought money for the purchase node (hacknet)")
+                this.ns.print("Not enought money for purchase the first node (hacknet)")
                 return
             }
 
@@ -47,7 +47,7 @@ export class Hacknet {
 
         const upgrade = nodeStats[0]
 
-        if (newNodeStats.ratio < upgrade.ratio) {
+        if (newNodeStats.ratio > upgrade.ratio) {
             if (minMoney < newNodeStats.cost) {
                 this.ns.print("Not enought money for the purchase node (hacknet)")
                 return
@@ -80,7 +80,7 @@ export class Hacknet {
 
     }
 
-    _calculateMedianNodeRate(mult: number): number {
+    private calculateMedianNodeRate(mult: number): number {
         if (this.nodes.length === 0) {
             return 0
           }
@@ -104,9 +104,9 @@ export class Hacknet {
           return nodeMedianRate
     }
 
-    _getNewNodeStats(mult: number): { name: string, cost: number, ratio: number } {
+    private getNewNodeStats(mult: number): { name: string, cost: number, ratio: number } {
         const nodePurshaseCost = this.ns.hacknet.getPurchaseNodeCost()
-        const nodePurshaseRate = this._calculateMedianNodeRate(mult)
+        const nodePurshaseRate = this.calculateMedianNodeRate(mult)
 
         return {
             name: "node",
