@@ -42,6 +42,10 @@ export class Player {
   get haveSQLInject(): boolean {
     return this.ns.fileExists('sqlinject.exe')
   }
+
+  get hacking(): number {
+    return this.ns.getPlayer().skills.hacking
+  }
 }
 
 let player: Player

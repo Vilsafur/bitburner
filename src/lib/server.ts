@@ -36,6 +36,27 @@ export class Server {
         return this.ns.getHackingLevel() >= this.ns.getServerRequiredHackingLevel(this.host)
     }
 
+    get maxMoney(): number {
+        return this.ns.getServerMaxMoney(this.host)
+    }
+
+    get hackingChance(): number {
+        const hackFactor = 1.75;
+        const difficultyMult = (100 - (this.info.hackDifficulty ?? 0)) / 100;
+        const skillMult = hackFactor * this.player.hacking;
+        const skillChance = (skillMult - this.ns.getServerRequiredHackingLevel(this.host)) / skillMult;
+        let chance = skillChance * difficultyMult * this.player.mults.hacking_chance;
+
+        if (chance > 1) {
+            chance = 1;
+        }
+        if (chance < 0) {
+            chance = 0;
+        }
+
+        return Math.round(((chance * 100) + Number.EPSILON) * 100) / 100
+    }
+
     basicHack(): void {
         if (this.hasAdminRight) {
             if (this.needWeaken) {
@@ -51,29 +72,39 @@ export class Server {
         }
     }
 
+    hackServer(server: Server): void {
+        if (server.needWeaken) {
+            this.weaken(server)
+        } else if (server.needGrow) {
+            this.grow(server)
+        } else if (server.canHack) {
+            this.hack(server)
+        }
+    }
+
     getThreadCount(scriptRamUsage: number): number {
         const usableRam = this.ns.getServerMaxRam(this.host) - this.ns.getServerUsedRam(this.host)
         return Math.floor(usableRam / scriptRamUsage)
     }
 
-    weaken(): void {
+    weaken(server: Server = this): void {
         const availaibleThreads = this.getThreadCount(1.75)
         if (availaibleThreads > 0) {
-            this.ns.exec("bin/weaken.js", this.host, availaibleThreads, this.host)
+            this.ns.exec("bin/weaken.js", this.host, availaibleThreads, server.host)
         }
     }
 
-    grow(): void {
+    grow(server: Server = this): void {
         const availaibleThreads = this.getThreadCount(1.75)
         if (availaibleThreads > 0) {
-            this.ns.exec("bin/grow.js", this.host, availaibleThreads, this.host)
+            this.ns.exec("bin/grow.js", this.host, availaibleThreads, server.host)
         }
     }
 
-    hack(): void {
+    hack(server: Server = this): void {
         const availaibleThreads = this.getThreadCount(1.70)
         if (availaibleThreads > 0) {
-            this.ns.exec("bin/hack.js", this.host, availaibleThreads, this.host)
+            this.ns.exec("bin/hack.js", this.host, availaibleThreads, server.host)
         }
     }
 

@@ -28,9 +28,33 @@ export class Farm
     while (true) {
       for (const server of this.getServersWithoutHome()) {  
         server.basicHack()
-  
-        await this.ns.sleep(1)
       }
+      await this.ns.sleep(1)
+    }
+  }
+
+  async getMoney(): Promise<void> {
+    while (true) {
+      const serverToHack = this.findBestServerToHack()
+
+      if (!serverToHack.hasAdminRight) {
+        this.ns.print(`[+] Get Admin Right for server ${serverToHack.host}`)
+        serverToHack.openPorts()
+        serverToHack.nuke()
+        continue
+      }
+      
+      for (const server of this.getServersWithoutHome()) {
+        if (!server.hasAdminRight) {
+          this.ns.print(`[+] Get Admin Right for server ${server.host}`)
+          server.openPorts()
+          server.nuke()
+          continue
+        }
+        server.hackServer(serverToHack)
+      }
+
+      await this.ns.sleep(1)
     }
   }
 
@@ -45,5 +69,38 @@ export class Farm
     })
   
     return Array.from(set.keys()).map((s) => new Server(this.ns, s))
+  }
+
+  private findBestServerToHack(): Server {
+
+    const serversToHack = this.servers.filter((s) => !s.isPurchase && s.canHack && s.maxMoney > 0)
+    const serverDetails = []
+
+    for (const server of serversToHack) {
+      const hackingChance = server.hackingChance
+      const money = server.maxMoney
+      serverDetails.push({
+        server,
+        hackingChance,
+        money
+      })
+    }
+    
+
+    const bestServer = serverDetails.reduce((prev, curr) => {
+      if (prev.hackingChance > curr.hackingChance) {
+        return prev
+      }
+  
+      if (prev.hackingChance === curr.hackingChance) {
+        if (prev.money > curr.money) {
+          return prev
+        }
+        return curr
+      }
+      return curr
+    });
+
+    return bestServer.server
   }
 }
